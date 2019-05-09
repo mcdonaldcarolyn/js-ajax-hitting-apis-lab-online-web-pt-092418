@@ -1,13 +1,52 @@
 // your code here
 function getRepositories() {
    const username = document.querySelector('#username').value;
-      const url = `https://api.github.com/users/${username}/repos`;
+   const url = `https://api.github.com/users/${username}/repos`;
   const req = new XMLHttpRequest();
-  eq.addEventListener('load', function () {
+  req.addEventListener('load', function () {
             // obviously do something else with the response text than just printing it out
             console.log(this.responseText);
         });
     
         req.open('GET', url);
         req.send();
+}
+
+function getCommits(el) {
+  const name = el.dataset.repo;
+  const req = new XMLHttpRequest();
+  req.addEventListener('load', showCommits);
+  req.open('GET', 'https://api.github.com/repos/octocat/' + name + '/commits');
+  req.send();
+}
+
+function displayRepositories() {
+  var repos = JSON.parse(this.responseText);
+  console.log(repos);
+  const repoList = `<ul>${repos
+    .map(
+      r =>
+        '<li>' +
+        r.name +
+        ' - <a href="#" data-repo="' +
+        r.name +
+        '" onclick="getCommits(this)">Get Commits</a></li>'
+    )
+    .join('')}</ul>`;
+  document.getElementById('repositories').innerHTML = repoList;
+
+}
+function showCommits() {
+  const commits = JSON.parse(this.responseText);
+  const commitsList = `<ul>${commits
+    .map(
+      commit =>
+        '<li><strong>' +
+        commit.author.login +
+        '</strong> - ' +
+        commit.commit.message +
+        '</li>'
+    )
+    .join('')}</ul>`;
+  document.getElementById('commits').innerHTML = commitsList;
 }
